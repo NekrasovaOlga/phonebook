@@ -37,7 +37,19 @@ body {
   background-repeat: no-repeat;
   background-position: center;
 }
-
+.edit{
+  opacity: 0;
+  width: 33px;
+}
+.edit-btn button{
+outline: none;
+border: none;
+transition: 0.3s ease-in-out;
+background: transparent;
+}
+.edit-btn button:hover{
+  color: rgb(166, 79, 79);
+}
 .delete.is-visible {
   width: 10px;
   display: table-cell;

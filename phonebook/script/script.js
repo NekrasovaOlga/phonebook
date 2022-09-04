@@ -85,6 +85,7 @@ const data = [
     thead.insertAdjacentHTML('beforeend', `
     <tr>
     <th class='delete'>Удалить</th>
+    <th class='edit'></th>
     <th>Имя</th>
     <th>Фамилия</th>
     <th>Телефон</th>
@@ -100,7 +101,7 @@ const data = [
   };
   const createForm = () => {
     const overlay = document.createElement('div');
-    overlay.classList.add('from-overlay');
+    overlay.classList.add('form-overlay');
 
     const form = document.createElement('form');
     form.classList.add('form');
@@ -163,19 +164,29 @@ const data = [
     const tdDel = document.createElement('td');
     tdDel.classList.add('delete');
     const buttonDel = document.createElement('button');
-    buttonDel.classList.add('del-icon');
     tdDel.append(buttonDel);
+
+    const tdEdit = document.createElement('td');
+    tdEdit.classList.add('edit-btn');
+    const buttonEdit = document.createElement('button');
+    buttonEdit.innerHTML = ` <i class="fa-solid fa-pen-to-square"></i>`;
+    tdEdit.append(buttonEdit);
+
     const tdName = document.createElement('td');
+    tdName.classList.add('table-name');
     tdName.textContent = FirstName;
     const tdSurname = document.createElement('td');
     tdSurname.textContent = surname;
+    tdSurname.classList.add('table-surname');
     const tdPhone = document.createElement('td');
     const phoneLink = document.createElement('a');
+    phoneLink.classList.add('table-phone');
     phoneLink.href = `tel:${phone}`;
     phoneLink.textContent = phone;
     tdPhone.append(phoneLink);
-
-    tr.append(tdDel, tdName, tdSurname, tdPhone);
+    tr.phoneLink = phoneLink;
+    tr.tdEdit = tdEdit;
+    tr.append(tdDel, tdEdit, tdName, tdSurname, tdPhone);
     return tr;
   };
 
@@ -184,6 +195,8 @@ const data = [
     const allRow = data.map(createRow);
 
     list.append(...allRow);
+
+    return allRow;
   };
 
 
@@ -195,7 +208,7 @@ const data = [
     const main = createMain();
     const buttonGroup = createGroupButton([
       {
-        className: 'btn btn-primary mr-3',
+        className: 'btn btn-primary mr-3 js-add',
         type: 'button',
         text: 'Добавить',
       },
@@ -212,19 +225,41 @@ const data = [
     main.mainContainer.append(buttonGroup.buttonWrapper, table);
 
     app.append(header, main, form.overlay, footer);
-
     return {
       list: table.tbody,
+      titleLogo,
+      btnAdd: buttonGroup.buttons[0],
+      formOverlay: form.overlay,
     };
+  };
+  const hoverRow = (allRow, logo) => {
+    const text = logo.textContent;
+    allRow.forEach(contact => {
+      contact.addEventListener('mouseenter', () => {
+        logo.textContent = contact.phoneLink.textContent;
+      });
+      contact.addEventListener('mouseleave', () => {
+        logo.textContent = text;
+      });
+    });
   };
 
   const init = (elemApp, title) => {
     const app = document.querySelector(elemApp);
     const phoneBook = renderPhoneBook(app, title);
+    const {list, titleLogo, btnAdd, formOverlay} = phoneBook;
+    const allRow = renderContacts(list, data);
 
-    const {list} = phoneBook;
-
-    renderContacts(list, data);
+    hoverRow(allRow, titleLogo);
+    btnAdd.addEventListener('click', () => {
+      formOverlay.classList.add('is-visible');
+    });
+    formOverlay.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!target.closest('form') || target.className === 'close') {
+        formOverlay.classList.remove('is-visible');
+      }
+    });
   };
   window.phoneBookInit = init;
 }
