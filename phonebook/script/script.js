@@ -42,10 +42,10 @@ const data = [
     return header;
   };
   // Создание подвала
-  const createFooter = () => {
+  const createFooter = (title) => {
     const footer = document.createElement('footer');
     footer.classList.add('footer');
-    footer.textContent = 'Все права защищены!';
+    footer.textContent = `Все права защищены! © ${title}`;
 
     return footer;
   };
@@ -191,7 +191,7 @@ const data = [
   const renderPhoneBook = (app, title) => {
     const header = createHeader();
     const titleLogo = createLogo(title);
-    const footer = createFooter();
+    const footer = createFooter(title);
     const main = createMain();
     const buttonGroup = createGroupButton([
       {
