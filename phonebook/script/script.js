@@ -2,7 +2,7 @@
 
 const data = [
   {
-    name: 'Иван',
+    name: 'Мария',
     surname: 'Петров',
     phone: '+79514545454',
   },
@@ -17,7 +17,7 @@ const data = [
     phone: '+79800252525',
   },
   {
-    name: 'Мария',
+    name: 'Алина',
     surname: 'Попова',
     phone: '+79876543210',
   },
@@ -86,8 +86,8 @@ const data = [
     <tr>
     <th class='delete'>Удалить</th>
     <th class='edit'></th>
-    <th>Имя</th>
-    <th>Фамилия</th>
+    <th class='sortName'>Имя</th>
+    <th class='sortSurname'>Фамилия</th>
     <th>Телефон</th>
 
     </tr>`);
@@ -99,6 +99,8 @@ const data = [
 
     return table;
   };
+
+  //  Создание формы
   const createForm = () => {
     const overlay = document.createElement('div');
     overlay.classList.add('form-overlay');
@@ -106,11 +108,10 @@ const data = [
     const form = document.createElement('form');
     form.classList.add('form');
 
-    form.insertAdjacentHTML('beforeend',
-        `
+    form.insertAdjacentHTML('beforeend', `
     <button class='close' type='button'></button>
     <h2 class='form-title'>Добавить контакт</h2>
- <div class='form-group'>
+  <div class='form-group'>
   <label for='name' class='form-label'>Имя:</label>
   <input class='form-input' type='text' name='name' id='name' required>
   </div>
@@ -122,8 +123,7 @@ const data = [
   <label for='phone' class='form-label'>Телефон:</label>
   <input class='form-input' type='text' name='phone' id='phone' required>
   </div>
-    `,
-    );
+    `);
 
     const buttonGroup = createGroupButton([
       {
@@ -158,18 +158,21 @@ const data = [
     return main;
   };
 
+  //  Создание строк
   const createRow = ({name: FirstName, surname, phone}) => {
     const tr = document.createElement('tr');
+    tr.classList.add('contact');
 
     const tdDel = document.createElement('td');
     tdDel.classList.add('delete');
     const buttonDel = document.createElement('button');
+    buttonDel.classList.add('del-icon');
     tdDel.append(buttonDel);
 
     const tdEdit = document.createElement('td');
     tdEdit.classList.add('edit-btn');
     const buttonEdit = document.createElement('button');
-    buttonEdit.innerHTML = ` <i class="fa-solid fa-pen-to-square"></i>`;
+    buttonEdit.innerHTML = ` <i class='fa-solid fa-pen-to-square'></i>`;
     tdEdit.append(buttonEdit);
 
     const tdName = document.createElement('td');
@@ -198,7 +201,14 @@ const data = [
 
     return allRow;
   };
+  const sortContacts = (number) => {
+    const table = document.querySelector('.table');
+    const sortedRows = Array.from(table.rows)
+      .slice(1)
+      .sort((rowA, rowB) => rowA.cells[number].innerHTML > rowB.cells[number].innerHTML ? 1 : -1);
 
+    table.tBodies[0].append(...sortedRows);
+  };
 
   // Вызов функции
   const renderPhoneBook = (app, title) => {
@@ -229,12 +239,13 @@ const data = [
       list: table.tbody,
       titleLogo,
       btnAdd: buttonGroup.buttons[0],
+      btnRemove: buttonGroup.buttons[1],
       formOverlay: form.overlay,
     };
   };
   const hoverRow = (allRow, logo) => {
     const text = logo.textContent;
-    allRow.forEach(contact => {
+    allRow.forEach((contact) => {
       contact.addEventListener('mouseenter', () => {
         logo.textContent = contact.phoneLink.textContent;
       });
@@ -247,10 +258,13 @@ const data = [
   const init = (elemApp, title) => {
     const app = document.querySelector(elemApp);
     const phoneBook = renderPhoneBook(app, title);
-    const {list, titleLogo, btnAdd, formOverlay} = phoneBook;
+    const {list, titleLogo, btnAdd, formOverlay, btnRemove} = phoneBook;
     const allRow = renderContacts(list, data);
+    const sortName = document.querySelector('.sortName');
+    const sortSurname = document.querySelector('.sortSurname');
 
     hoverRow(allRow, titleLogo);
+
     btnAdd.addEventListener('click', () => {
       formOverlay.classList.add('is-visible');
     });
@@ -260,6 +274,35 @@ const data = [
         formOverlay.classList.remove('is-visible');
       }
     });
+
+    btnRemove.addEventListener('click', () => {
+      document.querySelectorAll('.delete').forEach((del) => {
+        del.classList.toggle('is-visible');
+      });
+    });
+
+    list.addEventListener('click', (e) => {
+      if (e.target.closest('.del-icon')) {
+        e.target.closest('.contact').remove();
+      }
+    });
+
+    sortName.addEventListener('click', (e) => {
+      sortContacts(2);
+    });
+
+    sortSurname.addEventListener('click', (e) => {
+      sortContacts(3);
+    });
+
+    setTimeout(() => {
+      const contact = createRow({
+        name: 'Вася',
+        surname: 'Пупки',
+        phone: '+79876543210',
+      });
+      list.append(contact);
+    }, 1000);
   };
   window.phoneBookInit = init;
 }
