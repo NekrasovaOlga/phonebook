@@ -24,6 +24,9 @@ const data = [
 ];
 
 {
+  const createContact = (contact) => {
+    data.push(contact);
+  };
   // Создание контейнера
   const createContain = () => {
     const container = document.createElement('div');
@@ -230,19 +233,68 @@ const data = [
     ]);
 
     const table = createTable();
-    const form = createForm();
+    const {form, overlay} = createForm();
     header.headerContain.append(titleLogo);
     main.mainContainer.append(buttonGroup.buttonWrapper, table);
 
-    app.append(header, main, form.overlay, footer);
+    app.append(header, main, overlay, footer);
     return {
       list: table.tbody,
       titleLogo,
       btnAdd: buttonGroup.buttons[0],
       btnRemove: buttonGroup.buttons[1],
-      formOverlay: form.overlay,
+      formOverlay: overlay,
+      form,
     };
   };
+  const modalControl = (btnAdd, formOverlay) => {
+    const openModal = () => {
+      formOverlay.classList.add('is-visible');
+    };
+
+    const closeModal = () => {
+      formOverlay.classList.remove('is-visible');
+    };
+
+    btnAdd.addEventListener('click', openModal);
+    formOverlay.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!target.closest('form') || target.className === 'close') {
+        closeModal;
+      }
+    });
+
+    return {
+      closeModal,
+    };
+  };
+
+  const deleteControl = (btnRemove) => {
+    btnRemove.addEventListener('click', () => {
+      document.querySelectorAll('.delete').forEach((del) => {
+        del.classList.toggle('is-visible');
+      });
+    });
+  };
+
+  const sorting = (sortName, sortSurname) => {
+    sortName.addEventListener('click', (e) => {
+      sortContacts(2);
+    });
+
+    sortSurname.addEventListener('click', (e) => {
+      sortContacts(3);
+    });
+  };
+
+  const delRow = (list) => {
+    list.addEventListener('click', (e) => {
+      if (e.target.closest('.del-icon')) {
+        e.target.closest('.contact').remove();
+      }
+    });
+  };
+
   const hoverRow = (allRow, logo) => {
     const text = logo.textContent;
     allRow.forEach((contact) => {
@@ -254,46 +306,44 @@ const data = [
       });
     });
   };
+  const createContactPage = (contact, list) => {
+    list.append(createRow(contact));
+  };
+
+  const formControl = (form, list, closeModal) => {
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+
+      const formObj = new FormData(e.target);
+      const newContact = Object.fromEntries(formObj);
+
+      createContact(newContact);
+      createContactPage(newContact, list);
+
+
+      form.reset();
+      closeModal();
+    });
+  };
 
   const init = (elemApp, title) => {
     const app = document.querySelector(elemApp);
-    const phoneBook = renderPhoneBook(app, title);
-    const {list, titleLogo, btnAdd, formOverlay, btnRemove} = phoneBook;
+    const {list,
+      titleLogo,
+      btnAdd,
+      formOverlay,
+      form,
+      btnRemove} = renderPhoneBook(app, title);
     const allRow = renderContacts(list, data);
     const sortName = document.querySelector('.sortName');
     const sortSurname = document.querySelector('.sortSurname');
+    const {closeModal} = modalControl(btnAdd, formOverlay);
 
     hoverRow(allRow, titleLogo);
-
-    btnAdd.addEventListener('click', () => {
-      formOverlay.classList.add('is-visible');
-    });
-    formOverlay.addEventListener('click', (event) => {
-      const target = event.target;
-      if (!target.closest('form') || target.className === 'close') {
-        formOverlay.classList.remove('is-visible');
-      }
-    });
-
-    btnRemove.addEventListener('click', () => {
-      document.querySelectorAll('.delete').forEach((del) => {
-        del.classList.toggle('is-visible');
-      });
-    });
-
-    list.addEventListener('click', (e) => {
-      if (e.target.closest('.del-icon')) {
-        e.target.closest('.contact').remove();
-      }
-    });
-
-    sortName.addEventListener('click', (e) => {
-      sortContacts(2);
-    });
-
-    sortSurname.addEventListener('click', (e) => {
-      sortContacts(3);
-    });
+    deleteControl(btnRemove);
+    delRow(list);
+    sorting(sortName, sortSurname);
+    formControl(form, list, closeModal);
 
     setTimeout(() => {
       const contact = createRow({
