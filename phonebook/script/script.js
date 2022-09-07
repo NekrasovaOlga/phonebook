@@ -1,31 +1,24 @@
 'use strict';
 
-const data = [
-  {
-    name: 'Мария',
-    surname: 'Петров',
-    phone: '+79514545454',
-  },
-  {
-    name: 'Игорь',
-    surname: 'Семёнов',
-    phone: '+79999999999',
-  },
-  {
-    name: 'Семён',
-    surname: 'Иванов',
-    phone: '+79800252525',
-  },
-  {
-    name: 'Алина',
-    surname: 'Попова',
-    phone: '+79876543210',
-  },
-];
-
 {
-  const createContact = (contact) => {
-    data.push(contact);
+  const getStorage = () => {
+    return (localStorage.getItem('phone')) ? JSON.parse(localStorage.getItem('phone')) : [];
+  };
+
+  const setStorage = (data) => {
+    localStorage.setItem('phone', JSON.stringify(data));
+  };
+
+  const createContact = contact => {
+    const newContact = getStorage();
+    newContact.push(contact);
+    setStorage(newContact);
+  };
+
+  const removeStorage = contact => {
+    const allContact = getStorage();
+    const deletContact = allContact.filter(item => item.phone !== contact.textContent);
+    setStorage(deletContact);
   };
   // Создание контейнера
   const createContain = () => {
@@ -199,18 +192,18 @@ const data = [
   //  Создание таблицы с контактами
   const renderContacts = (list, data) => {
     const allRow = data.map(createRow);
-
     list.append(...allRow);
-
     return allRow;
   };
   const sortContacts = (number) => {
     const table = document.querySelector('.table');
     const sortedRows = Array.from(table.rows)
-      .slice(1)
-      .sort((rowA, rowB) => rowA.cells[number].innerHTML > rowB.cells[number].innerHTML ? 1 : -1);
+        .slice(1)
+        .sort((rowA, rowB) =>
+          (rowA.cells[number].innerHTML > rowB.cells[number].innerHTML ? 1 : -1));
 
     table.tBodies[0].append(...sortedRows);
+    localStorage.setItem('sort', number);
   };
 
   // Вызов функции
@@ -260,7 +253,7 @@ const data = [
     formOverlay.addEventListener('click', (event) => {
       const target = event.target;
       if (!target.closest('form') || target.className === 'close') {
-        closeModal;
+        closeModal();
       }
     });
 
@@ -287,14 +280,6 @@ const data = [
     });
   };
 
-  const delRow = (list) => {
-    list.addEventListener('click', (e) => {
-      if (e.target.closest('.del-icon')) {
-        e.target.closest('.contact').remove();
-      }
-    });
-  };
-
   const hoverRow = (allRow, logo) => {
     const text = logo.textContent;
     allRow.forEach((contact) => {
@@ -310,16 +295,22 @@ const data = [
     list.append(createRow(contact));
   };
 
+  const delRow = (list) => {
+    list.addEventListener('click', (e) => {
+      if (e.target.closest('.del-icon')) {
+        e.target.closest('.contact').remove();
+        removeStorage(e.target.closest('.contact').lastChild.lastChild);
+      }
+    });
+  };
   const formControl = (form, list, closeModal) => {
     form.addEventListener('submit', e => {
       e.preventDefault();
 
       const formObj = new FormData(e.target);
       const newContact = Object.fromEntries(formObj);
-
       createContact(newContact);
       createContactPage(newContact, list);
-
 
       form.reset();
       closeModal();
@@ -334,25 +325,22 @@ const data = [
       formOverlay,
       form,
       btnRemove} = renderPhoneBook(app, title);
+    const data = getStorage();
     const allRow = renderContacts(list, data);
     const sortName = document.querySelector('.sortName');
     const sortSurname = document.querySelector('.sortSurname');
     const {closeModal} = modalControl(btnAdd, formOverlay);
+
+    const sortLocal = localStorage.getItem('sort');
+    if (sortLocal !== null) {
+      sortContacts(sortLocal);
+    }
 
     hoverRow(allRow, titleLogo);
     deleteControl(btnRemove);
     delRow(list);
     sorting(sortName, sortSurname);
     formControl(form, list, closeModal);
-
-    setTimeout(() => {
-      const contact = createRow({
-        name: 'Вася',
-        surname: 'Пупки',
-        phone: '+79876543210',
-      });
-      list.append(contact);
-    }, 1000);
   };
   window.phoneBookInit = init;
 }
