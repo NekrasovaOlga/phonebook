@@ -1,4 +1,4 @@
-import { getStorage, setStorage } from './serviceStorage.js';
+import {getStorage, setStorage} from './serviceStorage.js';
 const createContact = (contact) => {
   const newContact = getStorage();
   newContact.push(contact);
@@ -41,7 +41,7 @@ const createLogo = (title) => {
 const createGroupButton = (params) => {
   const buttonWrapper = document.createElement('div');
   buttonWrapper.classList.add('btn-wrapper');
-  const buttons = params.map(({ className, type, text }) => {
+  const buttons = params.map(({className, type, text}) => {
     const button = document.createElement('button');
     button.className = className;
     button.textContent = text;
@@ -139,7 +139,7 @@ const createMain = () => {
 };
 
 //  Создание строк
-const createRow = ({ name: FirstName, surname, phone }) => {
+const createRow = ({name: FirstName, surname, phone}) => {
   const tr = document.createElement('tr');
   tr.classList.add('contact');
 

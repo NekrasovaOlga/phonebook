@@ -36,7 +36,7 @@ export const renderPhoneBook = (app, title) => {
   ]);
 
   const table = createTable();
-  const { form, overlay } = createForm();
+  const {form, overlay} = createForm();
   header.headerContain.append(titleLogo);
   main.mainContainer.append(buttonGroup.buttonWrapper, table);
 

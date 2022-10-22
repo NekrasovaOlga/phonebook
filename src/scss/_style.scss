@@ -1,13 +1,18 @@
+$mainColor: #3E5E93;
+
 body {
   min-width: 420px;
+  padding-bottom: 50px;
+  font-family: Montserrat, sans-serif;
 }
 
 .header {
-  background-color: #3E5E93;
+  background-color: $mainColor;
   color: #fff;
   margin-bottom: 40px;
   padding: 20px 0;
   text-align: center;
+  box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
 }
 
 .logo {
@@ -16,14 +21,13 @@ body {
   text-transform: uppercase;
 }
 
-@media (max-width: 720px) {
-  .logo {
-    font-size: 20px;
-  }
-}
-
 .delete {
   display: none;
+
+  &.is-visible {
+    width: 10px;
+    display: table-cell;
+  }
 }
 
 .del-icon {
@@ -36,30 +40,15 @@ body {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-}
-.edit{
-  opacity: 0;
-  width: 33px;
-}
-.edit-btn button{
-outline: none;
-border: none;
-transition: 0.3s ease-in-out;
-background: transparent;
-}
-.edit-btn button:hover{
-  color: rgb(166, 79, 79);
-}
-.delete.is-visible {
-  width: 10px;
-  display: table-cell;
+
+  &:hover {
+    opacity: 0.7;
+  }
 }
 
 .btn-wrapper {
   margin-bottom: 30px;
 }
-
-
 
 .form {
   padding: 30px 50px;
@@ -78,7 +67,6 @@ background: transparent;
   z-index: 2;
 }
 
-
 .form-title {
   margin-top: 0;
   padding-bottom: 20px;
@@ -87,7 +75,6 @@ background: transparent;
 .form-label {
   width: 80px;
 }
-
 
 .form-overlay {
   background-color: rgba(0, 0, 0, 0.6);
@@ -102,16 +89,17 @@ background: transparent;
   visibility: hidden;
   width: 100%;
   z-index: 1;
-}
 
-.form-overlay.is-visible {
-  opacity: 1;
-  visibility: visible;
-}
+  &.is-visible {
+    opacity: 1;
+    visibility: visible;
 
-.form-overlay.is-visible .form {
-  opacity: 1;
-  top: 40px;
+    .form {
+      opacity: 1;
+      top: 40px;
+    }
+  }
+
 }
 
 .close {
@@ -125,11 +113,10 @@ background: transparent;
   background-repeat: no-repeat;
   background-position: center;
   background-image: url("../img/del.svg");
-}
 
-.del-icon:hover,
-.close:hover {
-  opacity: 0.7;
+  &:hover {
+    opacity: 0.7;
+  }
 }
 
 .footer {
@@ -138,7 +125,14 @@ background: transparent;
   left: 0;
   right: 0;
   padding: 10px;
-  background-color: #3E5E93;
+  background-color: $mainColor;
   color: #fff;
   text-align: center;
+}
+
+@media (max-width: 720px) {
+  .logo {
+    font-size: 20px;
+    display: grid;
+  }
 }

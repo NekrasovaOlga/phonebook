@@ -1,21 +1,24 @@
-import { getStorage } from './modules/serviceStorage.js';
+import {getStorage} from './script/serviceStorage.js';
 
-import * as control from './modules/control.js';
+import * as control from './script/control.js';
 
-import { renderContacts, renderPhoneBook } from './modules/renderElement.js';
+import {renderContacts, renderPhoneBook} from './script/renderElement.js';
 
-import sortContacts from './modules/sort.js';
-import sorting from './modules/sorting.js';
+import sortContacts from './script/sort.js';
+import sorting from './script/sorting.js';
+
+import './scss/index.scss';
+import './index.html';
 
 const init = (elemApp, title) => {
   const app = document.querySelector(elemApp);
-  const { list, titleLogo, btnAdd, formOverlay, form, btnRemove } =
+  const {list, titleLogo, btnAdd, formOverlay, form, btnRemove} =
     renderPhoneBook(app, title);
   const data = getStorage();
   const allRow = renderContacts(list, data);
   const sortName = document.querySelector('.sortName');
   const sortSurname = document.querySelector('.sortSurname');
-  const { closeModal } = control.modalControl(btnAdd, formOverlay);
+  const {closeModal} = control.modalControl(btnAdd, formOverlay);
 
   const sortLocal = localStorage.getItem('sort');
   if (sortLocal !== null) {
@@ -28,4 +31,5 @@ const init = (elemApp, title) => {
   sorting(sortName, sortSurname);
   control.formControl(form, list, closeModal);
 };
-window.phoneBookInit = init;
+
+init('#app', 'Ольга');
